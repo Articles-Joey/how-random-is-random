@@ -59,25 +59,48 @@ export default function PageContent() {
         for (let i = 0; i < times; i++) {
             let r;
             if (randomType === "crypto" && typeof window !== "undefined" && window.crypto && window.crypto.getRandomValues) {
-                // Use crypto.getRandomValues for better randomness
                 const array = new Uint32Array(1);
                 window.crypto.getRandomValues(array);
                 r = (array[0] % upperRange) + 1;
             } else {
-                // Fallback to Math.random
                 r = Math.floor(Math.random() * upperRange) + 1;
             }
             tempNumberRange[r]++;
         }
         setNumberRange(tempNumberRange);
+        // Find min/max (skip index 0)
+        let min = Number.POSITIVE_INFINITY;
+        let max = Number.NEGATIVE_INFINITY;
+        let minIdx = -1;
+        let maxIdx = -1;
+        for (let i = 1; i <= upperRange; i++) {
+            if (tempNumberRange[i] < min) {
+                min = tempNumberRange[i];
+                minIdx = i;
+            }
+            if (tempNumberRange[i] > max) {
+                max = tempNumberRange[i];
+                maxIdx = i;
+            }
+        }
+        const range = max - min;
+        // Build list with percent
         const tempList = [];
         const tempChartData = [];
         const tempChartLabels = [];
         for (let i = 1; i <= upperRange; i++) {
-            tempList.push(`The number ${i} has appeared ${tempNumberRange[i]} Times`);
+            const percent = times > 0 ? ((tempNumberRange[i] / times) * 100).toFixed(2) : "0.00";
+            tempList.push(`The number ${i} has appeared ${tempNumberRange[i]} times (${percent}%)`);
             tempChartData.push(tempNumberRange[i]);
             tempChartLabels.push(`Number ${i}`);
         }
+        // Add summary
+        tempList.push('\u00A0');
+        tempList.push(
+            `\nMost frequent: Number ${maxIdx} (${max} times)`,
+            `Least frequent: Number ${minIdx} (${min} times)`,
+            `Largest range (max-min): ${range}`
+        );
         setList(tempList);
         setChartData(tempChartData);
         setChartLabels(tempChartLabels);
@@ -114,23 +137,27 @@ export default function PageContent() {
                         <Grid item>
                             <Grid container spacing={2} alignItems="center">
                                 <Grid item>
-                                    <Typography variant="body1">Numbers</Typography>
+                                    {/* <Typography variant="body1">Numbers</Typography> */}
                                     <TextField
                                         type="number"
                                         value={upperRange}
                                         onChange={e => setUpperRange(Number(e.target.value))}
                                         size="small"
+                                        variant="standard"
+                                        label="Numbers"
                                         inputProps={{ min: 1 }}
                                         sx={{ width: 80, ml: 1 }}
                                     />
                                 </Grid>
                                 <Grid item>
-                                    <Typography variant="body1">Times</Typography>
+                                    {/* <Typography variant="body1">Times</Typography> */}
                                     <TextField
                                         type="number"
                                         value={times}
                                         onChange={e => setTimes(Number(e.target.value))}
                                         size="small"
+                                        variant="standard"
+                                        label="Iterations"
                                         inputProps={{ min: 1 }}
                                         sx={{ width: 80, ml: 1 }}
                                     />
@@ -163,7 +190,7 @@ export default function PageContent() {
             <Box sx={{ display: 'grid', gap: 1, gridTemplateColumns: 'repeat(2, 1fr)', p: 2 }}>
 
                 <Box>
-                    <Typography variant="h5">List</Typography>
+                    <Typography variant="h5">Numbers Data</Typography>
                     <Paper sx={{ maxHeight: '70vh', overflowY: 'auto', p: 2 }}>
                         {list.map((item, idx) => (
                             <Typography key={idx} variant="body2">{item}</Typography>
