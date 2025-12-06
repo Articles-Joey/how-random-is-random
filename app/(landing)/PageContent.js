@@ -1,11 +1,11 @@
 "use client"
 import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 
-import { useHotkeys } from "react-hotkeys-hook";
+// import { useHotkeys } from "react-hotkeys-hook";
 
-import useStore from "@/components/useStore";
-import Link from "next/link";
+// import useStore from "@/components/useStore";
+// import Link from "next/link";
 
 import { Box, Button, Grid, Typography, TextField, Paper, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
 import { BarChart } from '@mui/x-charts/BarChart';
@@ -14,37 +14,37 @@ import AboutModal from "./AboutModal";
 
 export default function PageContent() {
 
-    const [canvasKey, setCanvasKey] = useState(0);
+    // const [canvasKey, setCanvasKey] = useState(0);
 
-    const quantity = useStore(state => state.quantity);
-    const setQuantity = useStore(state => state.setQuantity);
+    // const quantity = useStore(state => state.quantity);
+    // const setQuantity = useStore(state => state.setQuantity);
 
-    const autoRotate = useStore(state => state.autoRotate);
-    const setAutoRotate = useStore(state => state.setAutoRotate);
+    // const autoRotate = useStore(state => state.autoRotate);
+    // const setAutoRotate = useStore(state => state.setAutoRotate);
 
-    useHotkeys("r", () => setCanvasKey(prevKey => prevKey + 1));
-    useHotkeys("a", () => setAutoRotate(!autoRotate), [autoRotate]);
-    useHotkeys("f", () => handleFullscreen(), []);
+    // useHotkeys("r", () => setCanvasKey(prevKey => prevKey + 1));
+    // useHotkeys("a", () => setAutoRotate(!autoRotate), [autoRotate]);
+    // useHotkeys("f", () => handleFullscreen(), []);
 
-    useHotkeys("left", () => {
-        setQuantity(quantity - 1);
-    }, [quantity]);
-    useHotkeys("right", () => {
-        setQuantity(quantity + 1);
-    }, [quantity]);
+    // useHotkeys("left", () => {
+    //     setQuantity(quantity - 1);
+    // }, [quantity]);
+    // useHotkeys("right", () => {
+    //     setQuantity(quantity + 1);
+    // }, [quantity]);
 
-    const handleFullscreen = () => {
-        const element = document.getElementById('canvas-wrap');
-        if (element) {
-            if (!document.fullscreenElement) {
-                element.requestFullscreen().catch((err) => {
-                    console.error("Error attempting to enable fullscreen:", err);
-                });
-            } else {
-                document.exitFullscreen();
-            }
-        }
-    };
+    // const handleFullscreen = () => {
+    //     const element = document.getElementById('canvas-wrap');
+    //     if (element) {
+    //         if (!document.fullscreenElement) {
+    //             element.requestFullscreen().catch((err) => {
+    //                 console.error("Error attempting to enable fullscreen:", err);
+    //             });
+    //         } else {
+    //             document.exitFullscreen();
+    //         }
+    //     }
+    // };
 
     const [upperRange, setUpperRange] = useState(10);
     const [times, setTimes] = useState(10);

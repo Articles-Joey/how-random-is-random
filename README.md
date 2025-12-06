@@ -1,5 +1,5 @@
 ## How Random is Random?
-![Screenshot](public/preview/how-random.png)
+![Preview](public/preview/how-random.png)
 Chart to show how random the JavaScript random functions are
 
 ## Getting Started

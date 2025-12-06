@@ -1,13 +1,13 @@
-import { create } from 'zustand'
+// import { create } from 'zustand'
 
-const useStore = create((set) => ({
+// const useStore = create((set) => ({
 
-    quantity: 1,
-    setQuantity: (value) => set(() => ({ quantity: value })),
+//     quantity: 1,
+//     setQuantity: (value) => set(() => ({ quantity: value })),
 
-    autoRotate: true,
-    setAutoRotate: (value) => set(() => ({ autoRotate: value })),
+//     autoRotate: true,
+//     setAutoRotate: (value) => set(() => ({ autoRotate: value })),
 
-}))
+// }))
 
-export default useStore
+// export default useStore
