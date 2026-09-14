@@ -1,42 +1,38 @@
-import { MongoClient } from 'mongodb'
+import { MongoClient } from "mongodb";
 
-const uri = process.env.MONGODB_URI
+const uri = process.env.MONGODB_URI;
 const options = {
     // useUnifiedTopology: true,
     // useNewUrlParser: true,
-}
+};
 
-let client
-let clientPromise
+let client;
+let clientPromise;
 
 if (!process.env.MONGODB_URI) {
-    throw new Error('Please add your Mongo URI to .env.local')
+    throw new Error("Please add your Mongo URI to .env.local");
 }
 
-if (process.env.NODE_ENV === 'development') {
-
-    console.log("IS DEV (MONGODB)")
+if (process.env.NODE_ENV === "development") {
+    console.log("IS DEV (MONGODB)");
     // In development mode, use a global variable so that the value
     // is preserved across module reloads caused by HMR (Hot Module Replacement).
     if (!global._mongoClientPromise) {
+        console.log("WAS NOT CACHED (MONGODB)");
+        client = new MongoClient(uri, options);
 
-        console.log("WAS NOT CACHED (MONGODB)")
-        client = new MongoClient(uri, options)
-
-        global._mongoClientPromise = client.connect()
-        
+        global._mongoClientPromise = client.connect();
     } else {
-        console.log("WAS CACHED (MONGODB)")
+        console.log("WAS CACHED (MONGODB)");
     }
 
-    clientPromise = global._mongoClientPromise
-    
+    clientPromise = global._mongoClientPromise;
 } else {
     // In production mode, it's best to not use a global variable.
-    client = new MongoClient(uri, options)
-    clientPromise = client.connect()
+    client = new MongoClient(uri, options);
+    clientPromise = client.connect();
 }
 
 // Export a module-scoped MongoClient promise. By doing this in a
 // separate module, the client can be shared across functions.
-export default clientPromise
+export default clientPromise;

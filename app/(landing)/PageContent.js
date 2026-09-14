@@ -1,19 +1,17 @@
-"use client"
-import { useEffect, useState } from "react";
+"use client";
+import { useEffect } from "react";
 // import dynamic from "next/dynamic";
 
 // import { useHotkeys } from "react-hotkeys-hook";
 
-// import useStore from "@/components/useStore";
+import useStore from "@/components/useStore";
 // import Link from "next/link";
 
-import { Box, Button, Grid, Typography, TextField, Paper, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
-import { BarChart } from '@mui/x-charts/BarChart';
-import Image from "next/image";
+import { Box, Typography, Paper } from "@mui/material";
+import { BarChart } from "@mui/x-charts/BarChart";
 import AboutModal from "./AboutModal";
 
 export default function PageContent() {
-
     // const [canvasKey, setCanvasKey] = useState(0);
 
     // const quantity = useStore(state => state.quantity);
@@ -46,178 +44,122 @@ export default function PageContent() {
     //     }
     // };
 
-    const [upperRange, setUpperRange] = useState(10);
-    const [times, setTimes] = useState(10);
-    const [numberRange, setNumberRange] = useState([]);
-    const [list, setList] = useState([]);
-    const [chartData, setChartData] = useState([]);
-    const [chartLabels, setChartLabels] = useState([]);
-    const [randomType, setRandomType] = useState("math"); // "math" or "crypto"
-
-    const generate = () => {
-        let tempNumberRange = Array(upperRange + 1).fill(0);
-        for (let i = 0; i < times; i++) {
-            let r;
-            if (randomType === "crypto" && typeof window !== "undefined" && window.crypto && window.crypto.getRandomValues) {
-                const array = new Uint32Array(1);
-                window.crypto.getRandomValues(array);
-                r = (array[0] % upperRange) + 1;
-            } else {
-                r = Math.floor(Math.random() * upperRange) + 1;
-            }
-            tempNumberRange[r]++;
-        }
-        setNumberRange(tempNumberRange);
-        // Find min/max (skip index 0)
-        let min = Number.POSITIVE_INFINITY;
-        let max = Number.NEGATIVE_INFINITY;
-        let minIdx = -1;
-        let maxIdx = -1;
-        for (let i = 1; i <= upperRange; i++) {
-            if (tempNumberRange[i] < min) {
-                min = tempNumberRange[i];
-                minIdx = i;
-            }
-            if (tempNumberRange[i] > max) {
-                max = tempNumberRange[i];
-                maxIdx = i;
-            }
-        }
-        const range = max - min;
-        // Build list with percent
-        const tempList = [];
-        const tempChartData = [];
-        const tempChartLabels = [];
-        for (let i = 1; i <= upperRange; i++) {
-            const percent = times > 0 ? ((tempNumberRange[i] / times) * 100).toFixed(2) : "0.00";
-            tempList.push(`The number ${i} has appeared ${tempNumberRange[i]} times (${percent}%)`);
-            tempChartData.push(tempNumberRange[i]);
-            tempChartLabels.push(`Number ${i}`);
-        }
-        // Add summary
-        tempList.push('\u00A0');
-        tempList.push(
-            `\nMost frequent: Number ${maxIdx} (${max} times)`,
-            `Least frequent: Number ${minIdx} (${min} times)`,
-            `Largest range (max-min): ${range}`
-        );
-        setList(tempList);
-        setChartData(tempChartData);
-        setChartLabels(tempChartLabels);
-    };
-
-    const handleClear = () => {
-        setNumberRange([]);
-        setList([]);
-        setChartData([]);
-        setChartLabels([]);
-    };
+    const list = useStore((state) => state.list);
+    const chartData = useStore((state) => state.chartData);
+    const chartLabels = useStore((state) => state.chartLabels);
+    const chartColors = useStore((state) => state.chartColors);
+    const aboutOpen = useStore((state) => state.aboutOpen);
+    const setAboutOpen = useStore((state) => state.setAboutOpen);
+    const generate = useStore((state) => state.generate);
 
     useEffect(() => {
         generate();
-    }, [])
-
-    const [open, setOpen] = useState(false);
+    }, [generate]);
 
     return (
-        <Box>
-            
-            <Box sx={{ flexGrow: 1, mb: 3 }}>
-                <Paper elevation={3}>
-                    <Grid container alignItems="center" justifyContent="space-between" sx={{ px: 2, py: 1 }}>
-                        <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Image src="/icon.png" alt="Logo" width={50} height={50} />
-                            <Typography variant="h5" component="div" sx={{ fontWeight: 'bold', ml: 2 }}>
-                                How Random is Random?
-                            </Typography>
-                            <Button variant="outlined" color="info" onClick={() => setOpen(true)} sx={{ ml: 2 }}>
-                                About
-                            </Button>
-                        </Grid>
-                        <Grid item>
-                            <Grid container spacing={2} alignItems="center">
-                                <Grid item>
-                                    {/* <Typography variant="body1">Numbers</Typography> */}
-                                    <TextField
-                                        type="number"
-                                        value={upperRange}
-                                        onChange={e => setUpperRange(Number(e.target.value))}
-                                        size="small"
-                                        variant="standard"
-                                        label="Numbers"
-                                        inputProps={{ min: 1 }}
-                                        sx={{ width: 80, ml: 1 }}
-                                    />
-                                </Grid>
-                                <Grid item>
-                                    {/* <Typography variant="body1">Times</Typography> */}
-                                    <TextField
-                                        type="number"
-                                        value={times}
-                                        onChange={e => setTimes(Number(e.target.value))}
-                                        size="small"
-                                        variant="standard"
-                                        label="Iterations"
-                                        inputProps={{ min: 1 }}
-                                        sx={{ width: 80, ml: 1 }}
-                                    />
-                                </Grid>
-                                <Grid item>
-                                    <FormControl size="small" sx={{ minWidth: 120, ml: 2 }}>
-                                        <InputLabel id="random-type-label">Random Type</InputLabel>
-                                        <Select
-                                            labelId="random-type-label"
-                                            id="random-type-select"
-                                            value={randomType}
-                                            label="Random Type"
-                                            onChange={e => setRandomType(e.target.value)}
-                                        >
-                                            <MenuItem value="math">Math.random()</MenuItem>
-                                            <MenuItem value="crypto">crypto.getRandomValues</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item>
-                                    <Button variant="contained" color="primary" onClick={generate} sx={{ mr: 1 }}>Submit</Button>
-                                    <Button variant="outlined" color="secondary" onClick={handleClear}>Clear</Button>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Paper>
-            </Box>
-
-            <Box sx={{ display: 'grid', gap: 1, gridTemplateColumns: 'repeat(2, 1fr)', p: 2 }}>
-
-                <Box>
-                    <Typography variant="h5">Numbers Data</Typography>
-                    <Paper sx={{ maxHeight: '70vh', overflowY: 'auto', p: 2 }}>
+        <Box
+            sx={{
+                height: "calc(100dvh - 90px)",
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+            }}
+        >
+            <Box
+                sx={{
+                    flex: 1,
+                    minHeight: 0,
+                    display: "grid",
+                    gap: { xs: 1, lg: 2 },
+                    gridTemplateColumns: {
+                        xs: "1fr",
+                        lg: "minmax(0, 1fr) minmax(0, 3fr)",
+                    },
+                    gridTemplateRows: {
+                        xs: "minmax(250px, 42dvh) minmax(0, 1fr)",
+                        lg: "minmax(0, 1fr)",
+                    },
+                    gridTemplateAreas: {
+                        xs: '"chart" "numbers"',
+                        lg: '"numbers chart"',
+                    },
+                    p: { xs: 1, lg: 2 },
+                }}
+            >
+                {/* Numbers Data */}
+                <Box
+                    sx={{
+                        gridArea: "numbers",
+                        minHeight: 0,
+                        display: "flex",
+                        flexDirection: "column",
+                        overflow: "hidden",
+                    }}
+                >
+                    <Typography
+                        variant="h5"
+                        sx={{ flexShrink: 0 }}
+                    >
+                        Numbers Data
+                    </Typography>
+                    <Paper
+                        sx={{
+                            flex: 1,
+                            minHeight: 0,
+                            overflowY: "auto",
+                            p: 2,
+                        }}
+                    >
                         {list.map((item, idx) => (
-                            <Typography key={idx} variant="body2">{item}</Typography>
+                            <Typography
+                                key={idx}
+                                variant="body2"
+                            >
+                                {item}
+                            </Typography>
                         ))}
                     </Paper>
                 </Box>
 
-                <Box>
+                {/* Chart */}
+                <Box
+                    sx={{
+                        gridArea: "chart",
+                        minWidth: 0,
+                        minHeight: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        overflow: "hidden",
+                    }}
+                >
                     <BarChart
-                        xAxis={[{
-                            id: 'numbers',
-                            data: chartLabels,
-                            scaleType: 'band',
-                        }]}
-                        series={[{
-                            data: chartData,
-                            label: '# of Random Times Called',
-                        }]}
-                        height={400}
+                        xAxis={[
+                            {
+                                id: "numbers",
+                                data: chartLabels,
+                                scaleType: "band",
+                                colorMap: {
+                                    type: "ordinal",
+                                    colors: chartColors,
+                                },
+                            },
+                        ]}
+                        series={[
+                            {
+                                data: chartData,
+                                label: "# of Random Times Called",
+                            },
+                        ]}
+                        sx={{ width: "100%", height: "100%" }}
                     />
                 </Box>
-
             </Box>
 
-            <AboutModal open={open} onClose={() => setOpen(false)} />
-
+            <AboutModal
+                open={aboutOpen}
+                onClose={() => setAboutOpen(false)}
+            />
         </Box>
     );
-
 }

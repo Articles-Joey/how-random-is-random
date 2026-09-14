@@ -1,3 +1,3 @@
-const siteName = "How Random is Random?"
+const siteName = "How Random is Random?";
 
-export default siteName
+export default siteName;
